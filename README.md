@@ -26,7 +26,58 @@ This commands includes
 • Other IP Commands e.g. show ip route etc.
 <BR>
 
+## Program
+
+### server
+
+```python
+import socket
+from pythonping import ping
+s = socket.socket()
+s.bind(('localhost', 8000))
+s.listen(5)
+print("Server listening on port 8000...")
+c, addr = s.accept()
+print(f"Connection from {addr}")
+while True:
+    try:
+        hostname = c.recv(1024).decode('utf-8')
+        if not hostname or hostname.lower() == 'exit':
+            print("Client disconnected.")
+            break
+        response = ping(hostname, verbose=False, count=4)
+        c.send(str(response).encode('utf-8'))
+    except Exception as e:
+        c.send(f"Ping failed: {e}".encode('utf-8'))
+
+c.close()
+```
+
+### client 
+
+```python
+import socket
+s = socket.socket()
+s.connect(('localhost', 8000))
+while True:
+    ip = input("Enter the website you want to ping (or type 'exit' to quit): ")
+    s.send(ip.encode('utf-8'))
+    if ip.lower() == 'exit':
+        break
+    print(s.recv(4096).decode('utf-8'))
+s.close()
+```
+
 ## Output
+
+### server
+
+<img width="1486" height="893" alt="image" src="https://github.com/user-attachments/assets/b812fc8d-0295-4bfe-ab13-f1f5a7db8a1e" />
+
+### client 
+
+<img width="1482" height="933" alt="image" src="https://github.com/user-attachments/assets/c2f7826a-a2a2-48de-b5c1-1a0fc0378192" />
+
 
 ## Result
 Thus Execution of Network commands Performed 
